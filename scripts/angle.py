@@ -5,13 +5,11 @@ import math
 import rospy
 from std_msgs.msg import Float64MultiArray
 from sensor_msgs.msg import Imu
-from sensor_msgs.msg import Image
 import numpy as np
 
 from numpy import random
 from ultralytics import YOLO
 import cv2
-from cv_bridge import CvBridge
 import torch
 import time
 import sys
@@ -106,7 +104,7 @@ class imu:
         self.gyro = None
         self.ts = None    
         rospy.Subscriber("/car/car/camera/accel/sample", Imu, self.callback_accel)
-        rospy.Subscriber("/car/car/camera/gyro/sample", Imu, self.callback_gyro)
+        rospy.Subscriber("/car/car/camera/gyro/sample", Imu, self..callback_gyro)
         rospy.sleep(1)
         
     def callback_accel(self, msg):
@@ -131,26 +129,23 @@ if __name__ == "__main__":
 
     rospy.init_node('rs_motion', anonymous=True)
     pub_imu_angles = rospy.Publisher('imu_angles', Float64MultiArray, queue_size=10)
-    #pub_target_angles = rospy.Publisher('target_angles', Float64MultiArray, queue_size=10)
-    #pub_color_image = rospy.Publisher('color_image', Image, queue_size=10)
-    pub = rospy.Publisher('imagetimer', Image,queue_size=10)
-    pub_depth_image = rospy.Publisher('depth_img', Image, queue_size=10)
-    br = CvBridge()
-    #imu = imu()
-    #print(imu.accel)
-    #print(imu.gyro)
-    #print(imu.ts)
-    pipeline_imu = initialize_camera_imu()
-    pipeline_color_depth = initialize_camera_color_depth()
+    pub_target_angles = rospy.Publisher('target_angles', Float64MultiArray, queue_size=10)
+    
+    imu = imu()
+    print(imu.accel)
+    print(imu.gyro)
+    print(imu.ts)
+    #pipeline_imu = initialize_camera_imu()
+    #pipeline_color_depth = initialize_camera_color_depth()
     
     try:
       while not rospy.is_shutdown():
-          frames_imu = pipeline_imu.wait_for_frames()
+          #frames_imu = pipeline_imu.wait_for_frames()
           
           ## Gyro calculations
           #gather IMU data
-          accel = frames_imu[0].as_motion_frame().get_motion_data()
-          gyro = frames_imu[1].as_motion_frame().get_motion_data()
+          #accel = frames_imu[0].as_motion_frame().get_motion_data()
+          #gyro = frames_imu[1].as_motion_frame().get_motion_data()
 #          import pdb; pdb.set_trace()
           #<class 'pyrealsense2.pyrealsense2.vector'>
           #(Pdb) accel
@@ -159,10 +154,10 @@ if __name__ == "__main__":
           #x: -5.27443e-06, y: -0.0034287, z: -1.18961e-05
 
 
-          ts = frames_imu.get_timestamp()
-          #accel = imu.accel
-          #gyro = imu.gyro
-          #ts = imu.ts
+          #ts = frames_imu.get_timestamp()
+          accel = imu.accel
+          gyro = imu.gyro
+          ts = imu.ts
 
           #calculation for the first frame
           if (first):
@@ -213,23 +208,9 @@ if __name__ == "__main__":
           #print("Angle -  X: " + str(round(combinedangleX,2)) + "   Y: " + str(round(combinedangleY,2)) + "   Z: " + str(round(combinedangleZ,2)))
           
 #          ## Yolo calculations
-          frames = pipeline_color_depth.wait_for_frames()
-          color_frame = frames.get_color_frame()
-          depth = frames.get_depth_frame()
-          
-          # Send color data
-          color_image = np.asanyarray(color_frame.get_data())
-          
-          #if color_image is not None:
-          pub.publish(br.cv2_to_imgmsg(color_image))
-
-          
-          depth_image = np.asanyarray(depth.get_data())
-          #data_depth = Float64MultiArray()  # the data to be sent, initialise the array
-          #import pdb; pdb.set_trace()
-          #data_depth.data = np_array(depth_image)
-          pub_depth_image.publish(br.cv2_to_imgmsg(depth_image))
-          
+#          frames = pipeline_color_depth.wait_for_frames()
+#          color_frame = frames.get_color_frame()
+#          depth = frames.get_depth_frame()
 #          
 #          color_image = np.asanyarray(color_frame.get_data())
 #          im0s = color_image
@@ -286,5 +267,5 @@ if __name__ == "__main__":
 
     finally:
       pass
-      pipeline_imu.stop()
-      pipeline_color_depth.stop()
+      #pipeline_imu.stop()
+      #pipeline_color_depth.stop()
