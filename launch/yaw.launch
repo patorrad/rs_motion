@@ -1,7 +1,7 @@
-<?xml version="1.0"?>
+<!-- -*- mode: XML -*- -->
 
 <launch>
-  <node pkg="rs_motion" type="rs_motion.py" name="rs_motion" output="screen" >
+  <node pkg="rs_motion" type="yaw.py" name="yaw" output="screen" >
     
     <!-- LOGIN DETAILS -->
     <!--<param name="asus_pwd"          type="string"       value="robot123!" /> -->
